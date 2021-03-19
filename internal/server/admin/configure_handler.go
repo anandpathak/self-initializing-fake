@@ -2,13 +2,12 @@ package admin
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"self_initializing_fake/internal/model"
 	"self_initializing_fake/internal/service"
+
+	"github.com/gin-gonic/gin"
 )
-
-
 
 func ConfigureHandler(configurationService service.ConfigureService) gin.HandlerFunc {
 
@@ -18,11 +17,12 @@ func ConfigureHandler(configurationService service.ConfigureService) gin.Handler
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		}
 		fmt.Println("handler", request)
-		if err := configurationService.Run(request);  err != nil {
+		result, err := configurationService.Run(request)
+		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		}
 
-		c.JSON(http.StatusOK, gin.H{"success": "ok"})
+		c.JSON(http.StatusOK, gin.H{"success": result})
 
 	}
 }

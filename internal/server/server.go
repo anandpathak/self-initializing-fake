@@ -1,7 +1,6 @@
 package server
 
 import (
-	"golang.org/x/sync/errgroup"
 	"log"
 	"net/http"
 	"self_initializing_fake/internal/server/admin"
@@ -9,20 +8,25 @@ import (
 	"self_initializing_fake/internal/service"
 	"self_initializing_fake/pkg/memorydb"
 	"time"
+
+	"golang.org/x/sync/errgroup"
 )
 
 var (
 	g errgroup.Group
-
 )
+
 func Start() {
 
-	schema := memorydb.CreateSchema("mock_request","ID", "id" )
+	schema := memorydb.CreateSchema("mock_request", "ID", "id")
 	db, err := memorydb.New(&schema)
 	if err != nil {
 		panic(err)
 	}
 	configurationService := service.Configure{DB: db}
+	mockService := service.Mock{
+		DB: db,
+	}
 
 	adminServer := &http.Server{
 		Addr:              ":8112",
@@ -33,7 +37,7 @@ func Start() {
 
 	mockServer := &http.Server{
 		Addr:              ":8113",
-		Handler:           mock.MockRoutes(),
+		Handler:           mock.MockRoutes(mockService),
 		ReadHeaderTimeout: 3 * time.Second,
 		WriteTimeout:      5 * time.Second,
 	}
@@ -59,4 +63,3 @@ func Start() {
 	}
 
 }
-
