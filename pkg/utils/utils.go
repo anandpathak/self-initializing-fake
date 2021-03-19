@@ -1,10 +1,8 @@
 package utils
 
-import "self_initializing_fake/internal/model"
-
-func IncludesKey(hey model.Header, needle interface{}) bool {
+func IncludesKey(hey map[string]interface{}, key string, value interface{}) bool {
 	for h := range hey {
-		if h == needle {
+		if h == key {
 			return true
 		}
 	}

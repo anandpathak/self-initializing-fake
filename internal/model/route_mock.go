@@ -6,14 +6,14 @@ import (
 	"fmt"
 )
 
-type Header map[string]interface{}
+type Header map[string][]string
 
 type RequestBodyForMock struct {
-	ID       string      `json:"-"`
-	Headers  Header      `json:"headers" binding:"required"`
-	Request  interface{} `json:"request" binding:"required"`
-	Response interface{} `json:"response" binding:"required"`
-	URL      string      `json:"url" binding:"required"`
+	ID       string              `json:"-"`
+	Headers  map[string][]string `json:"headers" binding:"required"`
+	Request  interface{}         `json:"request" binding:"required"`
+	Response interface{}         `json:"response" binding:"required"`
+	URL      string              `json:"url" binding:"required"`
 }
 
 func (r RequestBodyForMock) GetHash() string {

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"self_initializing_fake/internal/model"
 	"self_initializing_fake/pkg/memorydb"
-	"self_initializing_fake/pkg/utils"
+	"strings"
 )
 
 type Mock struct {
@@ -16,16 +16,16 @@ type MockService interface {
 	Run(model.RequestBodyForMock) (*model.RequestBodyForMock, error)
 }
 
-
 func (m Mock) Run(request model.RequestBodyForMock) (*model.RequestBodyForMock, error) {
 
-	getResponse, err := m.DB.FetchById(TableName, "id",  request.ID)
+	getResponse, err := m.DB.FetchById(TableName, "id", request.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	r, ok := getResponse.(model.RequestBodyForMock); if !ok {
-		return nil,errors.New("mock not present")
+	r, ok := getResponse.(model.RequestBodyForMock)
+	if !ok {
+		return nil, errors.New("mock not present")
 	}
 	if !isMockValid(request, r) {
 		return nil, errors.New("request/header not matching")
@@ -34,7 +34,7 @@ func (m Mock) Run(request model.RequestBodyForMock) (*model.RequestBodyForMock, 
 	return &r, nil
 }
 
-func isMockValid(request, cachedMock model.RequestBodyForMock ) bool {
+func isMockValid(request, cachedMock model.RequestBodyForMock) bool {
 
 	fmt.Printf("\n\n%v == %v\n\n", request.Headers, cachedMock.Headers)
 	if !isHeaderValid(request.Headers, cachedMock.Headers) {
@@ -49,23 +49,20 @@ func isMockValid(request, cachedMock model.RequestBodyForMock ) bool {
 	return true
 }
 
-func isHeaderValid(requestHeaders, cachedHeaders model.Header) bool {
-	for h, _ := range requestHeaders {
-		if !ignorableHeaders(h) && !utils.IncludesKey(cachedHeaders, h)  {
-			fmt.Printf("%v is missing", h)
+func isHeaderValid(requestHeaders, cachedHeaders map[string][]string) bool {
+	for headerName, headerValue := range cachedHeaders {
+
+		result, found := requestHeaders[headerName]
+		if !found {
+			fmt.Printf("%v is missing", headerName)
+			return false
+		}
+		r := strings.Join(result, ",")
+		h := strings.Join(headerValue, ",")
+		if r == h {
+			fmt.Printf("failing keys, %s, %s, %v %v", result[0], headerValue[0], result, headerValue[0])
 			return false
 		}
 	}
 	return true
-}
-func ignorableHeaders(header string)  bool{
-	ih :=  map[string]bool{
-		"Accept": false,
-		"Content-Type": false,
-		"Content-Length": false,
-	}
-	if _, found := ih[header]; found {
-		return true
-	}
-	return false
 }

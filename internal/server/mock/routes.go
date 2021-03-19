@@ -2,7 +2,6 @@ package mock
 
 import "C"
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"self_initializing_fake/internal/model"
@@ -25,18 +24,12 @@ func MockRoutes(mock service.MockService) http.Handler {
 func mockHandler(mock service.MockService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var receivedRequest model.RequestBodyForMock
-		var headers model.Header
 		var request interface{}
 
 		receivedRequest.URL = fmt.Sprintf("%v", c.Request.URL)
 
-		h, err := json.Marshal(c.Request.Header)
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
-		_ = json.Unmarshal(h, &headers)
 
-		receivedRequest.Headers = headers
+		receivedRequest.Headers = c.Request.Header
 
 		if err := c.ShouldBindJSON(&request); err != nil {
 			fmt.Printf("request parsing invalid : %v", request)
@@ -46,8 +39,8 @@ func mockHandler(mock service.MockService) gin.HandlerFunc {
 		}
 
 		receivedRequest.ID = receivedRequest.GetHash()
-		var r *model.RequestBodyForMock
-		if r, err = mock.Run(receivedRequest); err != nil {
+		r, err := mock.Run(receivedRequest)
+		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}

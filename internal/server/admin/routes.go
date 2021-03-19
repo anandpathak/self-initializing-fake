@@ -6,6 +6,7 @@ import (
 	"self_initializing_fake/internal/service"
 )
 
+
 func AdminRoutes(configurationService service.ConfigureService) http.Handler {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
