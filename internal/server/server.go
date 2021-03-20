@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"self_initializing_fake/internal/server/admin"
 	"self_initializing_fake/internal/server/mock"
-	"self_initializing_fake/internal/service"
 	"self_initializing_fake/pkg/memorydb"
 	"time"
 
@@ -23,10 +22,9 @@ func Start() {
 	if err != nil {
 		panic(err)
 	}
-	configurationService := service.Configure{DB: db}
-	mockService := service.Mock{
-		DB: db,
-	}
+
+	configurationService := admin.Configure{DB: db}
+	mockService := mock.Mock{DB: db}
 
 	adminServer := &http.Server{
 		Addr:              ":8112",

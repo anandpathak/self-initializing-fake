@@ -1,9 +1,11 @@
-package service
+package mock
 
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"self_initializing_fake/internal/model"
+	"self_initializing_fake/internal/server/admin"
 	"self_initializing_fake/pkg/memorydb"
 	"strings"
 )
@@ -18,35 +20,28 @@ type MockService interface {
 
 func (m Mock) Run(request model.RequestBodyForMock) (*model.RequestBodyForMock, error) {
 
-	getResponse, err := m.DB.FetchById(TableName, "id", request.ID)
+	getResponse, err := m.DB.FetchById(admin.TableName, "id", request.ID)
 	if err != nil {
 		return nil, err
 	}
 
 	r, ok := getResponse.(model.RequestBodyForMock)
 	if !ok {
-		return nil, errors.New("mock not present")
+		return nil, errors.New(NoMockPresent)
 	}
-	if !isMockValid(request, r) {
-		return nil, errors.New("request/header not matching")
+	if !isHeaderValid(request.Headers, r.Headers) {
+		return nil, errors.New(fmt.Sprintf(IncorrectHeader, request.Headers, r.Headers))
+	}
+
+	if !isRequestValid(request.Request, r.Request) {
+		return nil, errors.New(fmt.Sprintf(IncorrectRequest, request.Request, r.Request))
 	}
 
 	return &r, nil
 }
 
-func isMockValid(request, cachedMock model.RequestBodyForMock) bool {
-
-	fmt.Printf("\n\n%v == %v\n\n", request.Headers, cachedMock.Headers)
-	if !isHeaderValid(request.Headers, cachedMock.Headers) {
-		return false
-	}
-	r := fmt.Sprintf("%v", request.Request)
-	cr := fmt.Sprintf("%v", cachedMock.Request)
-
-	if r != cr {
-		return false
-	}
-	return true
+func isRequestValid(request interface{}, mockedRequest interface{}) bool {
+	return reflect.DeepEqual(request, mockedRequest)
 }
 
 func isHeaderValid(requestHeaders, cachedHeaders map[string][]string) bool {
@@ -59,7 +54,7 @@ func isHeaderValid(requestHeaders, cachedHeaders map[string][]string) bool {
 		}
 		r := strings.Join(result, ",")
 		h := strings.Join(headerValue, ",")
-		if r == h {
+		if r != h {
 			fmt.Printf("failing keys, %s, %s, %v %v", result[0], headerValue[0], result, headerValue[0])
 			return false
 		}
