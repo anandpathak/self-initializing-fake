@@ -32,7 +32,7 @@ func Handler(mock MockService) gin.HandlerFunc {
 		}
 
 		setHeaders(c, fakeResponse.Response.Header)
-		c.JSON(200, fakeResponse.Response)
+		c.JSON(200, fakeResponse.Response.Body)
 	}
 }
 

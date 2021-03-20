@@ -1,0 +1,101 @@
+openapi: 3.0.1
+info:
+  title: Self-intializing-fake server
+  description: 'A simple http fake server, which '
+  version: 1.0.0
+externalDocs:
+  description: https://martinfowler.com/bliki/SelfInitializingFake.html
+  url: https://martinfowler.com/bliki/SelfInitializingFake.html
+servers:
+  - url: https://localhost:8112/
+tags:
+  - name: Setup
+    description: To setup a fake route
+
+paths:
+  /setup/fake_route:
+    post:
+      tags:
+        - setup
+      summary: Add a new fake route
+      requestBody:
+        description: Request body to configure the fake response
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetupRequest'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/SetupRequest'
+        required: true
+      responses:
+        200:
+          description: success response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetupSuccessResponse'
+        400:
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SetupBadResponse'
+
+      x-codegen-request-body-name: body
+components:
+  schemas:
+    Request:
+      required:
+        - header
+        - body
+      type: object
+      properties:
+        header:
+          type: array
+          items:
+            type: string
+        body:
+          type: object
+    Response:
+      required:
+        - header
+        - body
+      type: object
+      properties:
+        header:
+          type: array
+          items:
+            type: string
+        body:
+          type: object
+    SetupRequest:
+      required:
+        - name
+        - photoUrls
+      type: object
+      properties:
+        request:
+          type: object
+          $ref: '#/components/schemas/Request'
+        response:
+          type: object
+          $ref: '#/components/schemas/Response'
+        url:
+          type: string
+          description: "base path with query parameters"
+          example: "basePath?parameters"
+    SetupBadResponse:
+      properties:
+        status:
+          type: boolean
+        error:
+          type: string
+    SetupSuccessResponse:
+      properties:
+        status:
+          type: boolean
+        data:
+          type: string
+          description: "returns the object unique id <url md5>"
+

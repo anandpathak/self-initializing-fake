@@ -13,16 +13,16 @@ func Handler(configurationService Runner) gin.HandlerFunc {
 		var request model.TestDouble
 
 		if err := c.ShouldBindJSON(&request); err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"status": false, "error": err.Error()})
 		}
 
 		result, err := configurationService.Run(request)
 
 		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.JSON(http.StatusBadRequest, gin.H{"status": false, "error": err.Error()})
 		}
 
-		c.JSON(http.StatusOK, gin.H{"success": result})
+		c.JSON(http.StatusOK, gin.H{"status": true, "data": result})
 
 	}
 }
