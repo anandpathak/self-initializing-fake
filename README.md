@@ -14,7 +14,7 @@ Run via docker
 
 
 
-## [API defination](doc/swagger.yaml)
+## [API definition](doc/swagger.yaml)
 
 ### Example setup fake route
 
