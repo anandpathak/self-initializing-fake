@@ -26,6 +26,6 @@ func Execute( ) error{
 
 func setDefaultCommandIfNonePresent(c config) {
 	if len(os.Args) < 2 {
-		os.Args = append([]string{os.Args[0], "start", "-a", c.setupServerPort, "-f", c.fakeServerPort})
+		os.Args = append([]string{os.Args[0], "start"})
 	}
 }
