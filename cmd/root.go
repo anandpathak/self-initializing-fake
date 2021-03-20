@@ -14,16 +14,18 @@ var (
 )
 
 func init() {
-	setDefaultCommandIfNonePresent()
-	rootCmd.AddCommand(start())
+	config := initConfig()
+	setDefaultCommandIfNonePresent(config)
+
+	rootCmd.AddCommand(start(config))
 }
 
 func Execute( ) error{
 	return  rootCmd.Execute()
 }
 
-func setDefaultCommandIfNonePresent() {
+func setDefaultCommandIfNonePresent(c config) {
 	if len(os.Args) < 2 {
-		os.Args = append([]string{os.Args[0], "start"})
+		os.Args = append([]string{os.Args[0], "start", "-a", c.setupServerPort, "-f", c.fakeServerPort})
 	}
 }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"self_initializing_fake/internal/server/setup"
@@ -13,12 +14,13 @@ import (
 
 var (
 	g errgroup.Group
+	TableName = "test_double"
 )
 
-func Start() {
+func Start(setupServerPort, fakeServerPort string) {
 
-	schema := memorydb.CreateSchema("mock_request", "ID", "id")
-	db, err := memorydb.New(&schema)
+	schema := memorydb.CreateSchema(TableName, "ID", "id")
+	db, err := memorydb.New(&schema,TableName )
 	if err != nil {
 		panic(err)
 	}
@@ -26,15 +28,17 @@ func Start() {
 	configurationService := setup.Service{DB: db}
 	mockService := fake.Mock{DB: db}
 
+	port := fmt.Sprintf(":%s",setupServerPort)
 	setupServer := &http.Server{
-		Addr:              ":8112",
+		Addr:              port,
 		Handler:           setup.Routes(configurationService),
 		ReadHeaderTimeout: 3 * time.Second,
 		WriteTimeout:      5 * time.Second,
 	}
 
+	port = fmt.Sprintf(":%s",fakeServerPort)
 	mockServer := &http.Server{
-		Addr:              ":8113",
+		Addr:              port,
 		Handler:           fake.Routes(mockService),
 		ReadHeaderTimeout: 3 * time.Second,
 		WriteTimeout:      5 * time.Second,

@@ -21,7 +21,7 @@ func (c Service) Run(request model.TestDouble) (string, error) {
 	id := request.GetHash()
 	request.ID = id
 
-	if err := c.DB.Save(TableName, request); err != nil {
+	if err := c.DB.Save(request); err != nil {
 		return "", err
 	}
 	return id, nil

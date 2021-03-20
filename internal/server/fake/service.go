@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"reflect"
 	"self_initializing_fake/internal/model"
-	"self_initializing_fake/internal/server/setup"
 	"self_initializing_fake/pkg/memorydb"
 	"strings"
 )
@@ -20,7 +19,7 @@ type MockService interface {
 
 func (m Mock) Run(request model.TestDouble) (*model.TestDouble, error) {
 
-	td, err := m.DB.FetchById(setup.TableName, "id", request.ID)
+	td, err := m.DB.FetchById("id", request.ID)
 	if err != nil {
 		return nil, err
 	}
