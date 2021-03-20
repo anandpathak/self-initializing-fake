@@ -1,4 +1,4 @@
-package admin
+package setup
 
 import (
 	"net/http"
@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func ConfigureHandler(configurationService ConfigureService) gin.HandlerFunc {
+func Handler(configurationService Runner) gin.HandlerFunc {
 
 	return func(c *gin.Context) {
-		var request model.RequestBodyForMock
+		var request model.TestDouble
 
 		if err := c.ShouldBindJSON(&request); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

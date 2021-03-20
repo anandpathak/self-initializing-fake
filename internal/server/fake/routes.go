@@ -1,4 +1,4 @@
-package mock
+package fake
 
 import "C"
 import (
@@ -6,13 +6,13 @@ import (
 	"net/http"
 )
 
-func MockRoutes(mock MockService) http.Handler {
+func Routes(mock MockService) http.Handler {
 
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 	engine.Use(gin.Logger())
-	engine.GET("/*url", mockHandler(mock))
-	engine.POST("/*url", mockHandler(mock))
+	engine.GET("/*url", Handler(mock))
+	engine.POST("/*url", Handler(mock))
 
 	return engine
 }

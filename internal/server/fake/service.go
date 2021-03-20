@@ -1,11 +1,11 @@
-package mock
+package fake
 
 import (
 	"errors"
 	"fmt"
 	"reflect"
 	"self_initializing_fake/internal/model"
-	"self_initializing_fake/internal/server/admin"
+	"self_initializing_fake/internal/server/setup"
 	"self_initializing_fake/pkg/memorydb"
 	"strings"
 )
@@ -15,29 +15,29 @@ type Mock struct {
 }
 
 type MockService interface {
-	Run(model.RequestBodyForMock) (*model.RequestBodyForMock, error)
+	Run(model.TestDouble) (*model.TestDouble, error)
 }
 
-func (m Mock) Run(request model.RequestBodyForMock) (*model.RequestBodyForMock, error) {
+func (m Mock) Run(request model.TestDouble) (*model.TestDouble, error) {
 
-	getResponse, err := m.DB.FetchById(admin.TableName, "id", request.ID)
+	td, err := m.DB.FetchById(setup.TableName, "id", request.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	r, ok := getResponse.(model.RequestBodyForMock)
+	fakeTestDouble, ok := td.(model.TestDouble)
 	if !ok {
 		return nil, errors.New(NoMockPresent)
 	}
-	if !isHeaderValid(request.Headers, r.Headers) {
-		return nil, errors.New(fmt.Sprintf(IncorrectHeader, request.Headers, r.Headers))
+	if !isHeaderValid(request.Request.Header, fakeTestDouble.Request.Header) {
+		return nil, errors.New(fmt.Sprintf(IncorrectHeader, request.Request.Header, fakeTestDouble.Request.Header))
 	}
 
-	if !isRequestValid(request.Request, r.Request) {
-		return nil, errors.New(fmt.Sprintf(IncorrectRequest, request.Request, r.Request))
+	if !isRequestValid(request.Request.Body, fakeTestDouble.Request.Body) {
+		return nil, errors.New(fmt.Sprintf(IncorrectRequest, request.Request.Body, fakeTestDouble.Request.Body))
 	}
 
-	return &r, nil
+	return &fakeTestDouble, nil
 }
 
 func isRequestValid(request interface{}, mockedRequest interface{}) bool {

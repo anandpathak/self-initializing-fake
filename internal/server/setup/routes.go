@@ -1,4 +1,4 @@
-package admin
+package setup
 
 import (
 	"net/http"
@@ -6,17 +6,17 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func AdminRoutes(configurationService ConfigureService) http.Handler {
+func Routes(configurationService Runner) http.Handler {
 	engine := gin.New()
 	engine.Use(gin.Recovery())
 	engine.Use(gin.Logger())
 
-	adminRouteGroup := engine.Group("/admin")
+	adminRouteGroup := engine.Group("/setup")
 	{
 		adminRouteGroup.GET("/ping", func(c *gin.Context) {
 			c.String(200, "pong")
 		})
-		adminRouteGroup.POST("/configure", ConfigureHandler(configurationService))
+		adminRouteGroup.POST("/fake_route", Handler(configurationService))
 	}
 	return engine
 }

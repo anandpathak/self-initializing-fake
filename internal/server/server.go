@@ -3,8 +3,8 @@ package server
 import (
 	"log"
 	"net/http"
-	"self_initializing_fake/internal/server/admin"
-	"self_initializing_fake/internal/server/mock"
+	"self_initializing_fake/internal/server/setup"
+	"self_initializing_fake/internal/server/fake"
 	"self_initializing_fake/pkg/memorydb"
 	"time"
 
@@ -23,25 +23,25 @@ func Start() {
 		panic(err)
 	}
 
-	configurationService := admin.Configure{DB: db}
-	mockService := mock.Mock{DB: db}
+	configurationService := setup.Service{DB: db}
+	mockService := fake.Mock{DB: db}
 
-	adminServer := &http.Server{
+	setupServer := &http.Server{
 		Addr:              ":8112",
-		Handler:           admin.AdminRoutes(configurationService),
+		Handler:           setup.Routes(configurationService),
 		ReadHeaderTimeout: 3 * time.Second,
 		WriteTimeout:      5 * time.Second,
 	}
 
 	mockServer := &http.Server{
 		Addr:              ":8113",
-		Handler:           mock.MockRoutes(mockService),
+		Handler:           fake.Routes(mockService),
 		ReadHeaderTimeout: 3 * time.Second,
 		WriteTimeout:      5 * time.Second,
 	}
 
 	g.Go(func() error {
-		err := adminServer.ListenAndServe()
+		err := setupServer.ListenAndServe()
 		if err != nil && err != http.ErrServerClosed {
 			log.Fatal(err)
 		}

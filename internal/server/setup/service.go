@@ -1,22 +1,22 @@
-package admin
+package setup
 
 import (
 	"self_initializing_fake/internal/model"
 	"self_initializing_fake/pkg/memorydb"
 )
 
-type Configure struct {
+type Service struct {
 	DB memorydb.Store
 }
-type ConfigureService interface {
-	Run(model.RequestBodyForMock) (string, error)
+type Runner interface {
+	Run(model.TestDouble) (string, error)
 }
 
 const (
 	TableName = "mock_request"
 )
 
-func (c Configure) Run(request model.RequestBodyForMock) (string, error) {
+func (c Service) Run(request model.TestDouble) (string, error) {
 
 	id := request.GetHash()
 	request.ID = id

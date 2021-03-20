@@ -8,7 +8,7 @@ import (
 var (
 	rootCmd = &cobra.Command{
 		Use:   "self-initializing-fake",
-		Short: "setup mock server",
+		Short: "setup fake server",
 		Long:  ``,
 	}
 )
