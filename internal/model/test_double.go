@@ -21,8 +21,9 @@ type Request struct {
 }
 
 type Response struct {
-	Header map[string][]string `json:"headers"`
-	Body   interface{}         `json:"body" binding:"required"`
+	Header     map[string][]string `json:"headers"`
+	Body       interface{}         `json:"body" binding:"required"`
+	StatusCode int                 `json:"status_code" binding:"required"`
 }
 
 func (r TestDouble) GetHash() string {
