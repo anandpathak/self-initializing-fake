@@ -1,0 +1,18 @@
+stages:
+  - build_and_push
+
+build-and-push:
+  stage: build_and_push
+  variables:
+    ARTIFACTORY_REPOSITORY: "artifactory-gojek.golabs.io:6555"
+    IMAGE_NAME: "self-initializing-fake"
+    IMAGE_VERSION: "0.1.0"
+  script:
+    - docker build --no-cache -t $ARTIFACTORY_REPOSITORY/$IMAGE_NAME:$IMAGE_VERSION -f Dockerfile .
+    - docker push $ARTIFACTORY_REPOSITORY/$IMAGE_NAME:$IMAGE_VERSION
+  only:
+    - master
+  when: manual
+  tags:
+    - docker
+    - docker_artifactory
