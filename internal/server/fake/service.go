@@ -37,7 +37,11 @@ func (m Mock) Run(request model.TestDouble) (*model.TestDouble, error) {
 		return nil, errors.New(fmt.Sprintf(IncorrectRequest, request.Request.Body, fakeTestDouble.Request.Body))
 	}
 
-	return &fakeTestDouble, nil
+	d := schedule{}
+	response := <- d.Delay(fakeTestDouble)
+
+	return &response, nil
+
 }
 
 func isRequestValid(request interface{}, mockedRequest interface{}) bool {

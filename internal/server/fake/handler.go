@@ -2,11 +2,10 @@ package fake
 
 import (
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"net/http"
 	"self_initializing_fake/internal/model"
 	"strings"
-
-	"github.com/gin-gonic/gin"
 )
 
 func Handler(mock MockService) gin.HandlerFunc {
@@ -24,15 +23,16 @@ func Handler(mock MockService) gin.HandlerFunc {
 
 		receivedRequest.ID = receivedRequest.GetHash()
 
-		fakeResponse, err := mock.Run(receivedRequest)
+		data, err := mock.Run(receivedRequest)
 
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
+		fmt.Println("here is the data", data)
+		setHeaders(c, data.Response.Header)
+		c.JSON(data.Response.StatusCode, data.Response.Body)
 
-		setHeaders(c, fakeResponse.Response.Header)
-		c.JSON(fakeResponse.Response.StatusCode, fakeResponse.Response.Body)
 	}
 }
 

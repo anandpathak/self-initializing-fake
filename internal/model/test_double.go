@@ -24,6 +24,7 @@ type Response struct {
 	Header     map[string][]string `json:"headers"`
 	Body       interface{}         `json:"body" binding:"required"`
 	StatusCode int                 `json:"status_code" binding:"required"`
+	Latency    int                 `json:"latency"`
 }
 
 func (r TestDouble) GetHash() string {

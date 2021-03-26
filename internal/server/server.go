@@ -17,7 +17,7 @@ var (
 	TableName = "test_double"
 )
 
-func Start(setupServerPort, fakeServerPort string) {
+func Start(setupServerPort, fakeServerPort string, fakeServerTimeout int) {
 
 	schema := memorydb.CreateSchema(TableName, "ID", "id")
 	db, err := memorydb.New(&schema,TableName )
@@ -40,8 +40,8 @@ func Start(setupServerPort, fakeServerPort string) {
 	mockServer := &http.Server{
 		Addr:              port,
 		Handler:           fake.Routes(mockService),
-		ReadHeaderTimeout: 3 * time.Second,
-		WriteTimeout:      5 * time.Second,
+		ReadHeaderTimeout: time.Duration(fakeServerTimeout) * time.Second,
+		WriteTimeout:      time.Duration(fakeServerTimeout) * time.Second,
 	}
 
 	g.Go(func() error {
