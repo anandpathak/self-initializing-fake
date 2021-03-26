@@ -33,6 +33,7 @@ func (m Mock) Run(request model.TestDouble) (*model.TestDouble, error) {
 	}
 
 	if !isRequestValid(request.Request.Body, fakeTestDouble.Request.Body) {
+		fmt.Printf(IncorrectRequest, request.Request.Body, fakeTestDouble.Request.Body)
 		return nil, errors.New(fmt.Sprintf(IncorrectRequest, request.Request.Body, fakeTestDouble.Request.Body))
 	}
 
@@ -48,7 +49,7 @@ func isHeaderValid(requestHeaders, cachedHeaders map[string][]string) bool {
 
 		result, found := requestHeaders[headerName]
 		if !found {
-			fmt.Printf("%v is missing", headerName)
+			fmt.Printf("%v header is missing", headerName)
 			return false
 		}
 		r := strings.Join(result, ",")
