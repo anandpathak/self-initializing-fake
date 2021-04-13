@@ -1,9 +1,9 @@
 package fake
 
-import "C"
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 func Routes(mock MockService) http.Handler {
@@ -13,6 +13,7 @@ func Routes(mock MockService) http.Handler {
 	engine.Use(gin.Logger())
 	engine.GET("/*url", Handler(mock))
 	engine.POST("/*url", Handler(mock))
-
+	engine.PATCH("/*url", Handler(mock))
+	engine.DELETE("/*url", Handler(mock))
 	return engine
 }
