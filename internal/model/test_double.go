@@ -18,6 +18,7 @@ type TestDouble struct {
 type Request struct {
 	Header map[string][]string `json:"headers"`
 	Body   interface{}         `json:"body"`
+	IgnoreValidation bool `json:"ignore_validation"`
 }
 
 type Response struct {

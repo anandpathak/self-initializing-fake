@@ -32,10 +32,13 @@ func (m Mock) Run(request model.TestDouble) (*model.TestDouble, error) {
 		return nil, errors.New(fmt.Sprintf(IncorrectHeader, request.Request.Header, fakeTestDouble.Request.Header))
 	}
 
-	if !isRequestValid(request.Request.Body, fakeTestDouble.Request.Body) {
-		fmt.Printf(IncorrectRequest, request.Request.Body, fakeTestDouble.Request.Body)
-		return nil, errors.New(fmt.Sprintf(IncorrectRequest, request.Request.Body, fakeTestDouble.Request.Body))
+	if !fakeTestDouble.Request.IgnoreValidation {
+		if !isRequestValid(request.Request.Body, fakeTestDouble.Request.Body) {
+			fmt.Printf(IncorrectRequest, request.Request.Body, fakeTestDouble.Request.Body)
+			return nil, errors.New(fmt.Sprintf(IncorrectRequest, request.Request.Body, fakeTestDouble.Request.Body))
+		}
 	}
+
 
 	d := schedule{}
 	response := <- d.Delay(fakeTestDouble)
